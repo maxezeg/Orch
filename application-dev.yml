@@ -1,0 +1,183 @@
+# ===================================================================
+# Spring Boot configuration for the "dev" profile.
+#
+# This configuration overrides the application.yml file.
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+spring:
+    profiles:
+        active: dev
+    cva:
+#Ingest & transcode related parameters
+        watch-folder: /opt/cce/cva/watch_folder
+        failed-folder: /opt/cce/cva/failed
+        backup-folder: /opt/cce/cva/backup
+        completed-folder: /opt/cce/cva/completed
+        updates-folder: /opt/cce/cva/updates
+        working-folder: copy
+        profile-list: profile1,profile2,hbo_profile1,hbo_profile2
+        transcode-output-folder: /opt/cce/cva/output
+        dtd-file: /opt/cce/cva/application/ADI.DTD
+        abr-folder-name: ABR
+        abr-folder-path: /opt/cce/cva/ABR
+        xsd-file: /opt/cce/cva/application/ADIMod.xsd
+        #"fail" parameter will moves the package to failed folder,"overwrite" parameter deletes the transcoded files and triggers the transcode again
+        transcode-package-reingest: overwrite
+        #This parameter is in milliseconds
+        #Default is 5mins = 5(min)*60(sec)*1000(millisec)
+        profile-polling-interval: 300000
+        abr-polling-interval: 60000
+        transcode-init-poller-rate: 120000
+        transcode-poller-rate: 120000
+        #This parameter is in seconds
+        #Default is 5 hours = 5(hrs)*60(mins)*60(sec)
+        transcoder-timeout: 18000
+        max-messages-per-poll: 10
+        max-messages-per-abr-poll: 10
+        movie-filetype: mpg,ts
+        preview-filetype: mpg,ts
+        poster-filetype: jpg
+        metadata-filetype: XML,xml
+        caption-filetype: dfxp,scc
+        partial-filetype: partial,tmp,filepart
+        transcode-output-extn: _ts 
+        transcode-output-filetype: .xat 
+        requiredAssets: movie,preview,poster
+        #This parameter is in milliseconds
+        #Default is 10 sec = 10(sec) * 1000(millisec)
+        empty-folder-recheck-time: 10000
+#Encryption related parameters        
+        encrypt-poller-rate: 180000
+        encryption-timeout: 18000
+        content-id-keys: Provider_ID + Asset_ID
+        # Please include the slash at the end 
+        vmplus-input-movie-source-path-prefix: hold://HDD/
+        vmplus-input-movie-target-path-prefix: vod://HDD/orch_test/
+        vmplus-input-preview-source-path-prefix: hold://HDD/
+        vmplus-input-preview-target-path-prefix: vod://HDD/orch_test/
+        vmplus-ip-port: 172.20.245.9:8080
+        vmplus-username: admin
+        vmplus-password: cvanevia2015
+        vmplus-movie-fqdn: http://
+        vmplus-preview-fqdn: http://
+        vmplus-messages-per-poll: 10
+        #This parameter is in milliseconds
+        #Default is 60 sec = 60(sec) * 1000(millisec)
+        vmplus-request-poller-rate: 60000
+#Publish related parameters        
+        #This parameter is in milliseconds
+        #Default is 30sec = 30(sec)*1000(millisec)
+        vmplus-migrate-messages-per-poll: 10
+        vmplus-migrate-poller-rate: 1200000
+        vmplus-migrate-enable: false
+        saf-config-location: /opt/cce/cva/application
+        #saf:
+        #-
+            #sa_name: SA_Vod
+            #Protocol_Info: hls
+            #MIME_Type: text/xml
+            #Encryption_Type: verimatrix
+            #Other_Type: ''
+            #Asset_Prefix: ''
+        #-
+            #sa_name: vod_dash
+            #Protocol_Info: dash
+            #MIME_Type: application/dash+xml
+            #Encryption_Type: widevine
+            #Other_Type: ''
+            #Asset_Prefix: DASH       
+        sftp-timeout: 30000
+        published-folder: /home/cceadmin/ADI
+        sftp-username: cceadmin
+        sftp-password: cceadmin
+        sftp-host: 10.232.247.174
+        published-adi-filename: ADI.XML
+#License expiry related parameters
+        #Cron Expression.The pattern is a list of six single space-separated fields: representing second, minute, hour, day, month, weekday
+        cron-license-check-interval: '0 0 0 1/1 * ?'
+        cron-license-recheck-interval: '0 0/30 * * * ?'
+        #This maximum-viewing-length parameter is in minutes
+        maximum-viewing-length: 120
+        hbo:
+            profiles: hbo_profile1,hbo_profile2
+            xslt-file: /opt/cce/cva/application/HBOToADI.xsl
+            episode-xsd: /opt/cce/cva/application/HBOEpisode.xsd
+            nonepisode-xsd: /opt/cce/cva/application/HBONonEpisode.xsd
+            source-xpath: /metadata/feature/offering/offer-subtype/text()
+            format: HLS,Dash
+            language: SPA,ENG
+            xsdvalidation: true
+    devtools:
+        restart:
+            enabled: true
+        livereload:
+            enabled: false # we use Grunt + BrowserSync for livereload
+# Database configuration - URL & username/password
+    datasource:
+        driver-class-name: org.postgresql.ds.PGSimpleDataSource
+        url: jdbc:postgresql://localhost:5432/cva
+        name:
+        username: postgres
+        password: postgres
+    jpa:
+        database-platform: com.arris.cva.domain.util.FixedPostgreSQL82Dialect
+        database: POSTGRESQL
+        show_sql: false
+        properties:
+            hibernate.cache.use_second_level_cache: true
+            hibernate.cache.use_query_cache: false
+            hibernate.generate_statistics: true
+            hibernate.cache.region.factory_class: com.arris.cva.config.hazelcast.HazelcastCacheRegionFactory
+            hibernate.cache.use_minimal_puts: true
+            hibernate.cache.hazelcast.use_lite_member: true
+    data:
+        elasticsearch:
+            cluster-name:
+            cluster-nodes:
+            properties:
+                path:
+                  logs: target/elasticsearch/log
+                  data: target/elasticsearch/data
+    mail:
+        host: localhost
+    messages:
+        cache-seconds: 1
+    thymeleaf:
+        cache: false
+# Logging configuration for the orchestrator
+logging:
+    config: '/opt/cce/cva/application/logback-spring.xml'
+    path: '/opt/cce/cva/logs'
+liquibase:
+    contexts: dev
+
+server:
+    port: 48080
+
+# ===================================================================
+# JHipster specific properties
+# ===================================================================
+
+jhipster:
+    cache: # Hibernate 2nd level cache, used by CacheConfiguration
+        timeToLiveSeconds: 3600
+        hazelcast:
+            backupCount: 1
+    mail: # specific JHipster mail property, for standard properties see MailProperties
+        from: cva@localhost
+    metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
+        jmx.enabled: true
+        spark:
+            enabled: false
+            host: localhost
+            port: 9999
+        graphite:
+            enabled: false
+            host: localhost
+            port: 2003
